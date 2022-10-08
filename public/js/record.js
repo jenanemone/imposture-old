@@ -96,14 +96,15 @@ function playRecording(e) {
 
   if (audio && audio.tagName === 'AUDIO') {
     if (audio.paused) {
-      // let playPromise = audio.play();
-      // if (playPromise !== undefined) {
-      //   playPromise.then(function () {
-      //   }).catch(function (err) {
-      //     console.log(err);
-      //   })
-      // }
-      audio.play();
+      let playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function () {
+
+        }).catch(function (err) {
+          console.log(err);
+        })
+      }
+      //  audio.play();
       button.firstElementChild.src = '../assets/images/pause.png';
     } else {
       audio.pause();
@@ -157,6 +158,8 @@ async function fetchRecordings() {
 }
 
 function saveRecording() {
+  
+  
   const formData = new FormData();
   formData.append('audio', audioBlob, 'recording.mp3');
   console.log('form data', formData);

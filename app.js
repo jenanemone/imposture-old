@@ -12,11 +12,11 @@ const logger = require('morgan');
 const connectDB = require('./config/database');
 const multer = require('multer');
 const fs = require('fs');
+const cors = require('cors');
 
 const mainRoutes = require('./routes/main');
 const boardRoutes = require("./routes/dashboard");
-//const recordRoutes = require("./routes/record");
-const speechRoutes = require("./routes/speech");
+const recordRoutes = require("./routes/record");
 
 // env config
 require('dotenv').config( { path: './config/.env' } );
@@ -33,13 +33,18 @@ app.set('view engine', 'ejs');
 // Static folder
 app.use( express.static( path.join( __dirname, "public" ) ) );
 app.use(express.static(path.join( __dirname,'uploads') ) );
-console.log(__dirname);
+app.use(express.static(path.join( __dirname, 'dist') ) );
+
+
 //Body Parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //Logging
 app.use(logger("dev"));
+
+// cors
+app.use(cors({ origin: 'http://localhost:5500'}));
 
 // Sessions
 let store = MongoStore.create({
@@ -64,14 +69,14 @@ app.use(function (req, res, next) {
     next()
 })
 
+
 //Use forms for put / delete
 app.use(methodOverride("_method"));
 
 // Routes
 app.use("/", mainRoutes);
 app.use("/dashboard", boardRoutes);
-//app.use("/record", recordRoutes);
-app.use("/speech", speechRoutes);
+app.use("/record", recordRoutes);
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -87,7 +92,7 @@ const storage = multer.diskStorage({
 app.post('/record', upload.single('audio'), (req, res) => res.json({ success: true }));
 
 app.get('/recordings', (req, res) => {
-  let files = fs.readdirSync('uploads');
+  let files = fs.readdirSync(path.join(__dirname, 'uploads'));
   files = files.filter((file) => {
     // check that the files are audio files
     const fileNameArr = file.split('.');

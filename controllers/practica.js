@@ -25,7 +25,7 @@ module.exports = {
                 file: req.body.file,
             })
             console.log("practice has been stored in Mongo");
-            res.redirect('/speech');
+            res.redirect('/publicSpeech');
         } catch (err) {
             console.log(err);
         }
